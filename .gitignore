@@ -1,0 +1,33 @@
+# Credentials / secrets
+.env
+.env.*
+*.key
+*.pem
+*.p12
+*.pfx
+id_rsa*
+id_ed25519*
+*.kdbx
+*token*
+*secret*
+
+# Raw lab artifacts (review before sharing)
+*.pcap
+*.pcapng
+*.qcow2
+*.vmdk
+*.vdi
+*.ova
+*.ovf
+*.dump
+*.core
+*.log
+*.zip
+*.7z
+*.tar.gz
+
+# Local workspace
+.DS_Store
+*.swp
+__pycache__/
+.venv/
