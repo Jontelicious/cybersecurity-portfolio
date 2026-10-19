@@ -10,6 +10,7 @@ I am documenting practical work from my cybersecurity and penetration-testing st
 | --- | --- | --- |
 | **[Linux Mint Security Assessment & Hardening](linux-hardening/README.md)** | Assessed and hardened a Linux Mint KVM/libvirt host using Lynis, LinPEAS, chkrootkit, auditd, AIDE, and targeted configuration reviews. | **Lynis 70 → 76/100**, seven loaded audit rules, reduced unnecessary service/privilege exposure, kernel settings surviving reboot; [screenshots](linux-hardening/README.md#selected-verification-evidence). |
 | **[Debian RouterVM — Segmented Network Lab](router-vm/README.md)** | Configured routing, DHCP/DNS, NAT, and default-drop nftables policies across three internal virtual networks. | Verified allowed LAN3 gateway/internet connectivity and blocked LAN3 → LAN1 traffic; nftables drop counter changed **0 → 3 packets** for the reproduced test; [screenshots](router-vm/README.md#verification-screenshots). |
+| **[RouterVM Firewall Policy Verification](firewall-verification/README.md)** | Defined assignment-aligned traffic expectations; tested TCP paths, DNS, HTTPS, DHCP and source NAT; built a repeatable client checker. | Live checker validation on all three VMs: **14 PASS, four isolation timeouts corroborated by router counters, no FAIL**; seven checker tests pass. Separate NAT/DHCP evidence recorded. |
 | **[Network Monitoring](network-monitoring/README.md)** | Packet analysis and detection engineering. | **Planned** — not presented as a completed implementation. |
 
 ### Linux host hardening: assessment to verification
