@@ -74,13 +74,17 @@ Exit codes: 0 means all automated checks passed; 1 means at least one FAIL;
 2 means a setup problem or manual router evidence is still needed (also used by
 argparse for invalid arguments). Expected isolation probes normally produce exit
 2. Read the JSON and error text; do not interpret a nonzero exit as automatically
-meaning broken isolation. Missing tools fail the relevant checks explicitly.
+meaning broken isolation. Output-file creation errors produce a short setup-error
+message and exit 2 before any probes run. Missing tools fail the relevant checks
+explicitly.
 
 The script was run on all three actual VMs on 2026-10-19: **14 PASS, four
 NEEDS_ROUTER_EVIDENCE, no FAIL**. New RouterVM counter snapshots corroborate the
 isolation timeouts. See the [live checker validation](live-checker-validation-2026-10-19.md)
-for timestamps, counter changes and attribution limits. Seven checker tests also
-passed on Mint, including a real loopback connection and mocked probe results.
+for timestamps, counter changes and attribution limits. Seven checker tests
+passed on Mint for the live-tested version. The subsequent output-file error
+handling fix adds a regression test: eight tests pass locally. The archived live
+reports retain their original checker hash; network probe logic is unchanged.
 
 ```bash
 python3 -B -m unittest discover -s tests -v

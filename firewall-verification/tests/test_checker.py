@@ -1,8 +1,10 @@
+import io
 import json
 from pathlib import Path
 import socket
 import sys
 import threading
+import tempfile
 import unittest
 from unittest.mock import patch
 sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
@@ -43,6 +45,26 @@ class CheckerTests(unittest.TestCase):
             result=checker.collect('client1')
         self.assertIn('setup_error',result)
         self.assertEqual(result['tests'],[])
+
+    def test_output_path_errors_skip_probes_and_preserve_existing_file(self):
+        with tempfile.TemporaryDirectory() as folder:
+            existing = Path(folder) / 'existing.json'
+            existing.write_text('original report\n')
+            paths = (existing, Path(folder) / 'missing' / 'report.json')
+            for output in paths:
+                with self.subTest(output=output):
+                    stderr = io.StringIO()
+                    with patch.object(sys, 'argv', ['check_firewall.py', '--node',
+                                      'client1', '--output', str(output)]), \
+                         patch.object(sys, 'stderr', stderr), \
+                         patch.object(checker, 'collect') as collect:
+                        self.assertEqual(checker.main(), 2)
+                    collect.assert_not_called()
+                    self.assertIn('Setup error: cannot create output file', stderr.getvalue())
+                    self.assertNotIn('Traceback', stderr.getvalue())
+                    self.assertEqual(len(stderr.getvalue().splitlines()), 1)
+            self.assertEqual(existing.read_text(), 'original report\n')
+            self.assertFalse(paths[1].exists())
 
     def test_complete_client_run_separates_manual_evidence(self):
         def fake(argv,timeout):

@@ -126,7 +126,12 @@ def main():
     parser.add_argument('--output', type=Path, help='New JSON output file; refuses overwrite')
     args = parser.parse_args()
     # Reserve the report before probing; a path error must not trigger tests.
-    stream = args.output.open('x') if args.output else None
+    try:
+        stream = args.output.open('x') if args.output else None
+    except OSError as error:
+        print(f'Setup error: cannot create output file {args.output}: {error.strerror or error}',
+              file=sys.stderr)
+        return 2
     try:
         report = collect(args.node)
         encoded = json.dumps(report, indent=2) + '\n'
