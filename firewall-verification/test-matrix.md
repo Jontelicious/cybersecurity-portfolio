@@ -21,7 +21,7 @@ LAN3 is an additional homelab boundary. All tests below are IPv4.
 | S01 | RouterVM | nftables/dnsmasq services | systemctl | Enabled and active | Both enabled/active |
 | I01 | LAN clients | RouterVM LAN address | New TCP/22 | Block by current INPUT policy | Not tested here |
 | I02 | WAN subnet | RouterVM WAN address | New TCP/22 | Allow by current INPUT policy | Not tested here |
-| L01 | Denied probe | Relevant logging destination | Journal/log observation | Document drop logging coverage | Not tested; explicit LAN3 drops have no log statement |
+| L01 | Denied probe | Relevant logging destination | Journal/log observation | Document drop logging coverage | LAN3: all four TCP/22 paths logged with matching drop counters in the 09:05 CEST retest; other denial paths untested |
 
 The checker covers local SSH controls, P01–P06, D01–D06 and W01–W03 from the
 appropriate node. Blocked-path reports require manual router evidence. Other rows

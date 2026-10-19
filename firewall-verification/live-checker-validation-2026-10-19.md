@@ -48,6 +48,7 @@ directions between LAN3 and the lab LANs. DNS and HTTPS remain functional.
 Earlier manual NAT, DHCP and enabled/active service evidence is documented
 [separately](evidence-2026-10-19.md); this replay does not renew that evidence.
 
-No firewall or service settings were changed. Explicit LAN3 drops still bypass
-the terminal logging rule; denial logging coverage, router SSH policy tests,
-broader protocols and a new reboot persistence test remain outside this run.
+No firewall or service settings were changed during this initial run. LAN3
+logging was subsequently added and verified in a [separate retest](logging-validation-2026-10-19.md).
+Router SSH policy tests, broader protocols and a new reboot persistence test
+remain outside this run.

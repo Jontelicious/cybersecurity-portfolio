@@ -17,6 +17,7 @@ requirement; LAN1/LAN2 communication is intentional, not a firewall defect.
 | DHCP | client1/client2 completed DISCOVER/OFFER/REQUEST/ACK; agent-vm had REQUEST/ACK entries | Server-side journal and lease evidence; no forced renewals |
 | Services | nftables and dnsmasq both enabled and active | Startup configuration and current state; no new reboot test |
 
+[Logging change and retest](logging-validation-2026-10-19.md) ·
 [Detailed evidence and limitations](evidence-2026-10-19.md) ·
 [Test matrix](test-matrix.md) · [Checker](check_firewall.py)
 
@@ -125,11 +126,13 @@ capture can simply indicate that the observation window ended.
 - Live reports and accompanying router counters have been reviewed; broader
   policy and logging checks below remain open.
 - RouterVM INPUT policy permits LAN DNS/DHCP and WAN-subnet SSH; those SSH policy
-  directions, unsolicited WAN ingress and denial logging have not been tested in
-  this verification session.
-- The explicit LAN3 drop rules have counters but no log statement. They bypass
-  the final forward-chain logging rule. Do not claim every dropped packet is
-  logged based on the presence of that final rule.
+  directions and unsolicited WAN ingress have not been tested in this
+  verification session.
+- LAN3 denial logging was added and verified at 09:05 CEST: all four prohibited
+  TCP/22 paths appear in the kernel journal with matching drop counters. Logging
+  has a separate limit of 5/second, burst 5, in each direction; drops remain
+  unconditional. Sustained-traffic rate-limit behaviour and other denial logging
+  paths have not been tested. See the linked logging retest.
 - AgentVM firewalld permits SSH from Mint's 10.1.30.1 only; RouterVM's .254 source
   is rejected. This is a separate host boundary. It was preserved, not loosened
   to make a positive control pass. RouterVM can reach client1/client2 SSH;
