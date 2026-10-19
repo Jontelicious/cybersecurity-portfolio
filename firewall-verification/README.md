@@ -75,9 +75,11 @@ argparse for invalid arguments). Expected isolation probes normally produce exit
 2. Read the JSON and error text; do not interpret a nonzero exit as automatically
 meaning broken isolation. Missing tools fail the relevant checks explicitly.
 
-The script has **not yet been run on the actual lab VMs**. The manual results
-above predate the script. Local validation: seven tests, including a real loopback
-connection and mocked complete probe results; no external network/model calls.
+The script was run on all three actual VMs on 2026-10-19: **14 PASS, four
+NEEDS_ROUTER_EVIDENCE, no FAIL**. New RouterVM counter snapshots corroborate the
+isolation timeouts. See the [live checker validation](live-checker-validation-2026-10-19.md)
+for timestamps, counter changes and attribution limits. Seven checker tests also
+passed on Mint, including a real loopback connection and mocked probe results.
 
 ```bash
 python3 -B -m unittest discover -s tests -v
@@ -120,7 +122,8 @@ capture can simply indicate that the observation window ended.
 
 ## Remaining work and limits
 
-- Review one automated report from each actual VM, alongside new counter evidence.
+- Live reports and accompanying router counters have been reviewed; broader
+  policy and logging checks below remain open.
 - RouterVM INPUT policy permits LAN DNS/DHCP and WAN-subnet SSH; those SSH policy
   directions, unsolicited WAN ingress and denial logging have not been tested in
   this verification session.
