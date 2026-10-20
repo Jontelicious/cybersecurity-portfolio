@@ -1,8 +1,10 @@
-# Cybersecurity Homelab
+# Cybersecurity Portfolio
 
 **A hands-on cybersecurity and penetration-testing portfolio focused on Linux security, network segmentation, and evidence-based testing.**
 
 I am documenting practical work from my cybersecurity and penetration-testing studies in a private, virtualized lab. Each case study emphasizes **what was configured, why it mattered, how it was verified, and what remains untested**—rather than treating a scanner finding or a successful ping as proof on its own.
+
+This public portfolio presents selected, evidence-backed projects. The private working homelab repository is maintained separately.
 
 ## Featured projects
 
