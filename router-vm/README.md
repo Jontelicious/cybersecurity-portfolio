@@ -1,13 +1,13 @@
 # Debian RouterVM — Segmented Network Lab
 
 ## Overview
-A Debian-based router built with **KVM/QEMU and virt-manager** as part of a controlled cybersecurity networking lab. It originally routed two isolated internal subnets, and was subsequently expanded with a third subnet for an AgentVM to a libvirt NAT uplink, assigns client addresses with **dnsmasq**, and uses **nftables** to control router access, forwarding, and address translation.
+A Debian-based router built with **KVM/QEMU and virt-manager** as part of a controlled cybersecurity networking lab. It was built for a school exercise requiring routing between LAN1 and LAN2, and was subsequently expanded with an isolated third subnet for AgentVM. It connects to a libvirt NAT uplink, assigns client addresses using **dnsmasq**, and uses **nftables** for filtering and NAT.
 
 **Status:** Original two-LAN exercise completed. The current three-LAN layout has been tested for selected allowed paths and ICMP isolation paths, with nftables counter evidence. Four cropped evidence screenshots have been committed; broader protocol and reboot-persistence testing remain open.
 
 ## Configuration history
 
-The original exercise used LAN1 and LAN2 with inter-LAN forwarding denied. On 2026-10-16, the active configuration was confirmed to have an additional LAN3 for the AgentVM. Its nftables rules explicitly allow LAN1 ↔ LAN2 and isolate LAN3 from LAN1/LAN2. Historical verification below applies to the original exercise, not automatically to the revised policy.
+The **school assignment required LAN1 ↔ LAN2 forwarding to be allowed**. An earlier configuration/test run instead denied it; that observation was a deviation from the assignment requirement, not successful verification of the intended policy. On 2026-10-16, the active configuration had an additional LAN3 for AgentVM, while explicitly allowing LAN1 ↔ LAN2 and isolating LAN3 from LAN1/LAN2. The older tests document historical behavior, not assignment compliance.
 
 ## Learning objectives
 - Configure a Linux router with one WAN and, after expansion, three LAN interfaces and persistent IPv4 forwarding.
@@ -44,7 +44,7 @@ The router's **input** and **forward** chains use a **drop** policy. Rules accep
 - SSH (`tcp/22`) from the specified upstream virtual subnet to the router, for administration inside the trusted host lab.
 - ICMP and IPv6 ICMP as configured in the tested ruleset.
 - New forwarding from LAN1, LAN2, or LAN3 to WAN; return packets are allowed by connection tracking.
-- **Original exercise:** no new LAN1 ↔ LAN2 forwarding allowed. **Active policy on 2026-10-16:** LAN1 ↔ LAN2 explicitly allowed; new LAN3 ↔ LAN1/LAN2 forwarding explicitly denied. See [current firewall snapshot](configs/active-nftables-snapshot-2026-10-16.md).
+- **School assignment:** LAN1 ↔ LAN2 forwarding required. **Active policy on 2026-10-16:** LAN1 ↔ LAN2 explicitly allowed; new LAN3 ↔ LAN1/LAN2 forwarding explicitly denied. See [current firewall snapshot](configs/active-nftables-snapshot-2026-10-16.md).
 - Masquerade internal IPv4 source addresses when leaving through WAN.
 
 **Security boundary:** The libvirt default network also provides an upstream NAT layer. The lab's LAN separation is enforced by the RouterVM's forwarding policy, not merely by assigning different subnets.
@@ -58,7 +58,7 @@ Client default gateways were `10.1.10.254` and `10.1.20.254` respectively. The d
 
 For LAN3, AgentVM's console showed a DHCP-assigned `10.1.30.10/24` address and default gateway `10.1.30.254`. The precise LAN3 dnsmasq DHCP range has not yet been independently verified.
 
-## Original exercise verification matrix
+## Historical test results (including an assignment-policy deviation)
 
 | Test | Expected | Observed during lab |
 | --- | --- | --- |
@@ -66,9 +66,11 @@ For LAN3, AgentVM's console showed a DHCP-assigned `10.1.30.10/24` address and d
 | Router reaches external IPv4 destination | Success | Passed |
 | Client1 reaches external IPv4 destination | Success through router/NAT | Passed |
 | Client2 reaches external IPv4 destination | Success through router/NAT | Passed |
-| Client1 ↔ Client2 routed traffic | Blocked | Blocked by forward policy |
+| Client1 ↔ Client2 routed traffic | **Allowed (assignment requirement)** | **Blocked in the earlier configuration — did not meet requirement** |
 | DNS and DHCP service | Respond on each LAN | Configured and tested |
 | Firewall drop logging | Evidence of rejected traffic | Drop entries observed after test traffic |
+
+Later verification on 2026-10-19 confirmed fresh TCP/22 connectivity between LAN1 and LAN2 in both directions, with nftables accept counters, as documented in the [firewall policy verification project](../firewall-verification/README.md) in the public portfolio. That project also documents DNS, DHCP, IPv4 HTTPS and source-NAT tests. These later checks do not establish coverage of every protocol or policy edge case.
 
 Traceroute from clients showed the RouterVM as the first hop and the libvirt NAT gateway as the next hop. These results were recorded during the original exercise; **raw terminal transcripts and screenshots have not yet been uploaded here**.
 
@@ -83,7 +85,7 @@ These values are based on `ip -br addr` and `ip route` output from RouterVM. The
 
 ## Current three-LAN validation — 2026-10-16
 
-The current policy differs from the original exercise: LAN1 ↔ LAN2 is **allowed** and LAN3 is isolated from LAN1/LAN2. The following controlled tests were conducted in the active topology.
+The current policy **meets the assignment requirement** to allow LAN1 ↔ LAN2 and adds LAN3 isolation from LAN1/LAN2. The following controlled tests were conducted in the active topology.
 
 | Test | Observed result | Evidence scope |
 | --- | --- | --- |
