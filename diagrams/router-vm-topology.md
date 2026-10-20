@@ -17,7 +17,7 @@ flowchart TD
     Router <--> |"LAN3 10.1.30.0/24"| Agent
 ```
 
-## Current firewall policy (separate from the original coursework exercise)
+## Current firewall policy (assignment-aligned, with an added LAN3)
 
 - All three LANs have explicit permission to forward new traffic to WAN, with IPv4 masquerading for their respective subnets.
 - LAN1 ↔ LAN2 forwarding is explicitly **allowed** in the active ruleset.
@@ -25,4 +25,4 @@ flowchart TD
 - Stateful established/related rules precede segment-specific rules.
 - Input and forward chains default to drop, with rate-limited logging for unmatched traffic.
 
-See [the active nftables snapshot](../router-vm/configs/active-nftables-snapshot-2026-10-16.md). These are ruleset observations, not proof of newly executed connectivity tests. The original two-LAN assignment used different inter-LAN policy.
+See [the active nftables snapshot](../router-vm/configs/active-nftables-snapshot-2026-10-16.md). These are ruleset observations, not proof of newly executed connectivity tests. The original two-LAN assignment required LAN1 ↔ LAN2 connectivity. Earlier observed blocking was not assignment-compliant; LAN3 isolation is the later additional policy.
