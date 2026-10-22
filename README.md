@@ -6,6 +6,11 @@ I am documenting practical work from my cybersecurity and penetration-testing st
 
 This public portfolio presents selected, evidence-backed projects. The private working homelab repository is maintained separately.
 
+## Learning milestones and certificates
+
+- **[TryHackMe — Cyber Security 101: Certificate of Completion](certifications/tryhackme-cyber-security-101.md)** — completed **22 October 2026**, with **45 hours 23 minutes** of recorded coursework. This is a learning-path completion credential, not the separate SEC1 professional certification. [TryHackMe profile](https://tryhackme.com/p/macfarlane.jonathan).
+- **Next learning path:** Jr Penetration Tester (selected; progress not yet recorded).
+
 ## Featured projects
 
 | Project | What I built or assessed | Verified outcome |
