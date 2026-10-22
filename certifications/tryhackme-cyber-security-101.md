@@ -31,4 +31,8 @@ My next chosen learning path is **TryHackMe Jr Penetration Tester**, to develop 
 
 TryHackMe issued my **Cyber Security 101 Learning path — Certificate of Completion** with a completion date of **22 October 2026** and a recorded duration of **45 hours 23 minutes**.
 
-The original PDF is retained separately and is **not embedded in this repository entry**. The TryHackMe profile linked above is the provider reference; please do not treat this page as verification of a paid professional certification.
+**[View the original completion certificate (PDF)](./THM-DT40H8IJJL.pdf)**
+
+![TryHackMe Cyber Security 101 Certificate of Completion](./tryhackme-cyber-security-101.png)
+
+The official certificate PDF and its image preview are both included in this repository. This learning-path completion certificate is separate from the paid SEC1 professional certification.
