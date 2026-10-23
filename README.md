@@ -17,7 +17,7 @@ This public portfolio presents selected, evidence-backed projects. The private w
 | --- | --- | --- |
 | **[Linux Mint Security Assessment & Hardening](linux-hardening/README.md)** | Assessed and hardened a Linux Mint KVM/libvirt host using Lynis, LinPEAS, chkrootkit, auditd, AIDE, and targeted configuration reviews. | **Lynis 70 → 76/100**, seven loaded audit rules, reduced unnecessary service/privilege exposure, kernel settings surviving reboot; [screenshots](linux-hardening/README.md#selected-verification-evidence). |
 | **[Debian RouterVM — Segmented Network Lab](router-vm/README.md)** | Configured routing, DHCP/DNS, NAT, and default-drop nftables policies across three internal virtual networks. | Verified allowed LAN3 gateway/internet connectivity and blocked LAN3 → LAN1 traffic; nftables drop counter changed **0 → 3 packets** for the reproduced test; [screenshots](router-vm/README.md#verification-screenshots). |
-| **[RouterVM Firewall Policy Verification](firewall-verification/README.md)** | Defined assignment-aligned traffic expectations; tested TCP paths, DNS, HTTPS, DHCP and source NAT; built a repeatable client checker. | Live checker validation on all three VMs: **14 PASS, four isolation timeouts corroborated by router counters, no FAIL**; seven checker tests pass. Separate NAT/DHCP evidence recorded. |
+| **[RouterVM Firewall Policy Verification](firewall-verification/README.md)** | Defined assignment-aligned traffic expectations; tested TCP paths, DNS, HTTPS, DHCP and source NAT; built a repeatable client checker. | Live checker validation on all three VMs: **14 PASS, four isolation timeouts corroborated by router counters, no FAIL**; eight local checker tests pass after the output-file error-handling fix (seven for the live-tested version). Separate NAT/DHCP evidence recorded. |
 | **[Network Monitoring](network-monitoring/README.md)** | Packet analysis and detection engineering. | **Planned** — not presented as a completed implementation. |
 
 ### Linux host hardening: assessment to verification
@@ -69,7 +69,7 @@ See the [RouterVM test report](router-vm/agentvm-connectivity-test-2026-10-16.md
 
 ## Current limitations and upcoming work
 
-- RouterVM's tested ICMP isolation paths do **not** establish that all TCP/UDP flows or stateful edge cases are blocked.
+- RouterVM's dated ICMP and TCP/22 checks cover selected paths only; arbitrary TCP/UDP ports, IPv6 and stateful edge cases remain untested. See the [2026-10-19 firewall verification](firewall-verification/README.md) for the later checks and their limits.
 - Linux host hardening is incremental; the Lynis report retains recommendations, several of which require compatibility and threat-model review.
 - Representative RouterVM guest connectivity was retested after restarting the virtual machines; broader VM/service persistence testing remains open.
 - Network-monitoring and detection work is planned rather than documented as completed.
@@ -81,4 +81,4 @@ All testing described here was performed on systems I own or have explicit permi
 
 ---
 
-**Start here:** [Linux Hardening](linux-hardening/README.md) · [RouterVM](router-vm/README.md) · [Network Topology](diagrams/router-vm-topology.md)
+**Start here:** [Linux Hardening](linux-hardening/README.md) · [RouterVM](router-vm/README.md) · [Firewall Verification](firewall-verification/README.md) · [Network Topology](diagrams/router-vm-topology.md)
