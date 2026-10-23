@@ -3,7 +3,7 @@
 ## Overview
 A Debian-based router built with **KVM/QEMU and virt-manager** as part of a controlled cybersecurity networking lab. It was built for a school exercise requiring routing between LAN1 and LAN2, and was subsequently expanded with an isolated third subnet for AgentVM. It connects to a libvirt NAT uplink, assigns client addresses using **dnsmasq**, and uses **nftables** for filtering and NAT.
 
-**Status:** Original two-LAN exercise completed. The current three-LAN layout has been tested for selected allowed paths and ICMP isolation paths, with nftables counter evidence. Four cropped evidence screenshots have been committed; broader protocol and reboot-persistence testing remain open.
+**Status (verification through 2026-10-19):** The three-LAN lab has dated ICMP evidence plus later TCP/22 policy checks, UDP/TCP DNS, IPv4 HTTPS, source-NAT and DHCP evidence. LAN1 ↔ LAN2 TCP/22 succeeded in both directions; four LAN3 isolation probes timed out with corroborating grouped RouterVM drop counters. See the [firewall policy verification project](../firewall-verification/README.md). These are point-in-time results for selected paths; broader protocol, stateful edge-case and reboot-persistence testing remain open.
 
 ## Configuration history
 
@@ -50,13 +50,17 @@ The router's **input** and **forward** chains use a **drop** policy. Rules accep
 **Security boundary:** The libvirt default network also provides an upstream NAT layer. The lab's LAN separation is enforced by the RouterVM's forwarding policy, not merely by assigning different subnets.
 
 ## DHCP and DNS
+### Historical two-LAN configuration
+
 In the original exercise, dnsmasq served:
 - **LAN1:** `10.1.10.10–10.1.10.100`
 - **LAN2:** `10.1.20.10–10.1.20.100`
 
 Client default gateways were `10.1.10.254` and `10.1.20.254` respectively. The dnsmasq syntax check returned **OK**, and the service was confirmed active after restart.
 
-For LAN3, AgentVM's console showed a DHCP-assigned `10.1.30.10/24` address and default gateway `10.1.30.254`. The precise LAN3 dnsmasq DHCP range has not yet been independently verified.
+### Later documented configuration — 2026-10-19
+
+The [firewall verification record](../firewall-verification/README.md#network) documents dynamic pools of `.100–.200` on each LAN with 12-hour leases. Client1 and Client2 have reserved `.10` addresses with infinite leases; AgentVM has reserved `10.1.30.10` with a 12-hour lease and gateway `10.1.30.254`. Server-side DHCP evidence records DISCOVER/OFFER/REQUEST/ACK for Client1/Client2 and REQUEST/ACK for AgentVM; no forced renewals were performed. The older ranges above are retained as configuration history.
 
 ## Historical test results (including an assignment-policy deviation)
 
@@ -83,7 +87,7 @@ Traceroute from clients showed the RouterVM as the first hop and the libvirt NAT
 
 These values are based on `ip -br addr` and `ip route` output from RouterVM. The existence of a route does not itself establish client reachability or successful isolation tests.
 
-## Current three-LAN validation — 2026-10-16
+## Historical three-LAN ICMP validation — 2026-10-16
 
 The current policy **meets the assignment requirement** to allow LAN1 ↔ LAN2 and adds LAN3 isolation from LAN1/LAN2. The following controlled tests were conducted in the active topology.
 
