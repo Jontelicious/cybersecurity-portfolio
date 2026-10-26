@@ -1,8 +1,8 @@
 # RouterVM verification checklist
 
-This checklist distinguishes the **original two-LAN assignment** from the **current three-LAN policy**. The configurations have different inter-LAN access rules. Do not present original results as proof of the current ruleset.
+The **original two-LAN assignment required LAN1 ↔ LAN2 communication**. An earlier configuration blocked that traffic, which was a deviation from the requirement. The later three-LAN policy allows LAN1 ↔ LAN2 and adds LAN3 isolation. This checklist separates the dated evidence below; historical results are not proof of a later ruleset.
 
-## Current policy (three LANs, October 2026)
+## Historical three-LAN ICMP observations — 2026-10-16
 
 | Source | Destination | Expected | Verification |
 | --- | --- | --- | --- |
@@ -19,11 +19,27 @@ This checklist distinguishes the **original two-LAN assignment** from the **curr
 
 Source of test observations: [LAN3 connectivity and counter results](agentvm-connectivity-test-2026-10-16.md). The [active nftables snapshot](configs/active-nftables-snapshot-2026-10-16.md) documents the reviewed policy; rule presence alone does not establish real-world reachability.
 
-## Original coursework policy (historical)
+## Later three-LAN verification — 2026-10-19
 
-The original two-LAN exercise **blocked LAN1 ↔ LAN2** while allowing each LAN to reach WAN. Those earlier checks and drop logs were valid for that *older* configuration, not for the current three-LAN firewall.
+The [firewall policy verification project](../firewall-verification/README.md) records later IPv4 checks. These supplement the ICMP history above; they do not retroactively establish that an untested ICMP path was tested.
 
-The [two-LAN nftables teaching example](configs/nftables-example.md) is also historical and must not be treated as a copy of the live ruleset.
+| Area | Documented result | Evidence scope |
+| --- | --- | --- |
+| LAN1 ↔ LAN2 | Fresh TCP/22 connections succeeded in both directions; each directional accept counter increased by one packet | Two IPv4 TCP paths |
+| LAN3 ↔ LAN1/LAN2 | All four TCP/22 probes timed out; each grouped isolation drop counter increased by 6 packets / 360 bytes | Router blocking corroborated during the probe interval; grouped counters do not attribute each probe individually |
+| DNS | UDP and TCP queries to each VM's router gateway returned NOERROR with A answers | Router-provided resolution for the tested name |
+| WAN connectivity and NAT | Each VM received HTTP/2 200 over IPv4 HTTPS; separate paired ingress/egress SYN captures showed RouterVM source NAT | Selected sessions and translation at RouterVM, before upstream libvirt NAT |
+| DHCP and services | Client1/Client2 DISCOVER/OFFER/REQUEST/ACK; AgentVM REQUEST/ACK; nftables and dnsmasq enabled and active | Server-side evidence; no forced renewals or new reboot test |
+
+See [manual evidence](../firewall-verification/evidence-2026-10-19.md), [live checker validation](../firewall-verification/live-checker-validation-2026-10-19.md), and the [test matrix](../firewall-verification/test-matrix.md). The later [logging retest](../firewall-verification/logging-validation-2026-10-19.md) recorded path-specific kernel journal entries for all four prohibited TCP/22 paths, alongside matching drop counters. The raw checker statuses remain NEEDS_ROUTER_EVIDENCE rather than automated passes.
+
+These are point-in-time results for selected IPv4 paths. Arbitrary TCP/UDP ports, IPv6, stateful edge cases and full reboot persistence remain unverified.
+
+## Assignment requirement and historical configuration deviation
+
+The school assignment **required LAN1 ↔ LAN2 forwarding to be allowed**. The earlier two-LAN configuration instead blocked it while allowing each LAN to reach WAN. Its checks and drop logs document observed behavior, but that blocking did **not** satisfy the assignment. The later three-LAN policy preserves the required LAN1/LAN2 communication and adds LAN3 isolation.
+
+The [two-LAN nftables teaching example](configs/nftables-example.md) reproduces the historical blocking configuration; it is not an assignment-compliant template or a copy of the live ruleset.
 
 ## Read-only router checks
 
@@ -48,10 +64,10 @@ To test reachability, use controlled ICMP or other authorized traffic from the r
 | 2026-10-16 | AgentVM | RouterVM gateway | Allow | 3/3 ICMP replies | Not isolated | [Allowed paths](evidence/lan3-allowed-connectivity.png) |
 | 2026-10-16 | AgentVM | External IPv4 | Allow | 3/3 ICMP replies | Not separately attributed | [Allowed paths](evidence/lan3-allowed-connectivity.png) |
 
-## Remaining checks
+## Completed follow-up and remaining checks
 
-- [ ] Fresh LAN1 ↔ LAN2 permitted-flow tests under the current policy
-- [ ] Fresh Client2 → AgentVM denied-flow test
+- [x] Fresh LAN1 ↔ LAN2 IPv4 TCP/22 connections succeeded in both directions on 2026-10-19, with directional accept-counter increases
+- [x] Fresh Client2 → AgentVM IPv4 TCP/22 denial probe recorded on 2026-10-19, with corroborating router counters and path-specific journal evidence in the logging retest
 - [ ] Broader TCP/UDP and stateful traffic checks where needed
 - [ ] Full startup/persistence validation for DHCP, DNS, nftables and guest routing
 - [ ] Review all images and tracked configuration text before public release
