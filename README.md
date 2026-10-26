@@ -18,6 +18,7 @@ This public portfolio presents selected, evidence-backed projects. The private w
 | **[Linux Mint Security Assessment & Hardening](linux-hardening/README.md)** | Assessed and hardened a Linux Mint KVM/libvirt host using Lynis, LinPEAS, chkrootkit, auditd, AIDE, and targeted configuration reviews. | **Lynis 70 → 76/100**, seven loaded audit rules, reduced unnecessary service/privilege exposure, kernel settings surviving reboot; [screenshots](linux-hardening/README.md#selected-verification-evidence). |
 | **[Debian RouterVM — Segmented Network Lab](router-vm/README.md)** | Configured routing, DHCP/DNS, NAT, and default-drop nftables policies across three internal virtual networks. | Verified allowed LAN3 gateway/internet connectivity and blocked LAN3 → LAN1 traffic; nftables drop counter changed **0 → 3 packets** for the reproduced test; [screenshots](router-vm/README.md#verification-screenshots). |
 | **[RouterVM Firewall Policy Verification](firewall-verification/README.md)** | Defined assignment-aligned traffic expectations; tested TCP paths, DNS, HTTPS, DHCP and source NAT; built a repeatable client checker. | Live checker validation on all three VMs: **14 PASS, four isolation timeouts corroborated by router counters, no FAIL**; eight local checker tests pass after the output-file error-handling fix (seven for the live-tested version). Separate NAT/DHCP evidence recorded. |
+| **[Cross-Agent Code Review — AI Agent Skills Benchmark](ai-agent-evaluation/README.md)** | Developed an offline Nmap XML CLI independently with Codex and OpenCode, then performed reciprocal read-only reviews and targeted repairs. | Initial suites: **17 and 13 tests passed**; cross-review identified previously missed defects; final independent verification: **20 tests passed**, including nine frozen fixture outcomes. |
 | **[Network Monitoring](network-monitoring/README.md)** | Packet analysis and detection engineering. | **Planned** — not presented as a completed implementation. |
 
 ### Linux host hardening: assessment to verification
@@ -81,4 +82,4 @@ All testing described here was performed on systems I own or have explicit permi
 
 ---
 
-**Start here:** [Linux Hardening](linux-hardening/README.md) · [RouterVM](router-vm/README.md) · [Firewall Verification](firewall-verification/README.md) · [Network Topology](diagrams/router-vm-topology.md)
+**Start here:** [Linux Hardening](linux-hardening/README.md) · [RouterVM](router-vm/README.md) · [Firewall Verification](firewall-verification/README.md) · [Network Topology](diagrams/router-vm-topology.md) · [AI Agent Benchmark](ai-agent-evaluation/README.md)
