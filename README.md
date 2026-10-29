@@ -9,7 +9,7 @@ This public portfolio presents selected, evidence-backed projects. The private w
 ## Learning milestones and certificates
 
 - **[TryHackMe — Cyber Security 101: Certificate of Completion](certifications/tryhackme-cyber-security-101.md)** — completed **22 October 2026**, with **45 hours 23 minutes** of recorded coursework. This is a learning-path completion credential, not the separate SEC1 professional certification. [TryHackMe profile](https://tryhackme.com/p/macfarlane.jonathan).
-- **Next learning path:** Jr Penetration Tester (selected; progress not yet recorded).
+- **[TryHackMe — Jr Penetration Tester progress](training/tryhackme-jr-penetration-tester.md)** — **9% complete as of 28 October 2026**. Five confirmed completed items; Penetration Testing Frameworks in progress (10%). Network Reconnaissance and Nmap are upcoming, not confirmed started. [Notion progress tracker](https://app.notion.com/p/401fd2d660c6819eb0bbdbda62b84b22?pvs=204).
 
 ## Featured projects
 
