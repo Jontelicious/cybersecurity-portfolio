@@ -25,7 +25,7 @@ This completion documents structured study and exposure to the topics and tools 
 
 I am applying these fundamentals in a virtualized KVM/QEMU homelab through Linux host security reviews, segmented Debian networks, nftables policy verification, and evidence-based documentation.
 
-My next chosen learning path is **TryHackMe Jr Penetration Tester**, to develop a more methodical approach to reconnaissance, enumeration, application testing, and reporting.
+I have started **[TryHackMe Jr Penetration Tester](../training/tryhackme-jr-penetration-tester.md)**, with **9% completion verified on 28 October 2026**. Current studies cover penetration-testing foundations and frameworks; network reconnaissance and Nmap remain upcoming in the learning path. The linked progress log distinguishes completed rooms, ongoing work and future topics.
 
 ## Certificate evidence
 
