@@ -125,4 +125,4 @@ The owner supplied screenshots of the post-reboot sysctl query and `sudo auditct
 - A Lynis report query showed `lynis_version=3.0.9` and `hardening_index=76`.
 - `lynis show details KRNL-6000` returned *historical* log lines timestamped earlier on October 16, **before** the kernel remediations; values such as `bpf_jit_harden=0` in that output must **not** be presented as current state.
 
-The source screenshots and full Lynis transcript remain outside the repository pending sanitation/publication review.
+Selected cropped screenshots are committed: [post-reboot kernel settings](evidence/kernel-hardening.png), [loaded audit rules](evidence/auditd-rules.png), and [Lynis version and final index](evidence/lynis-final.png). The full Lynis transcript is not committed; these images do not provide raw evidence for every historical finding.
