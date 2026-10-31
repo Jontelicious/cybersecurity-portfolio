@@ -7,4 +7,4 @@ Images cropped from the owner's screenshots. The command results are unchanged. 
 - `nftables-drop-counter.png`: Matching RouterVM nftables isolation drop rule showing three dropped packets / 252 bytes; prior screenshot showed zero.
 - `lan3-allowed-connectivity.png`: AgentVM gateway and external IPv4 reachability, 3/3 packets received on each path.
 
-The evidence covers selected ICMP paths, not every protocol or all possible traffic patterns. The images should remain in the private repository until personally reviewed for publication.
+The evidence covers selected ICMP paths, not every protocol or all possible traffic patterns. These selected images are published in this public portfolio. Their presence does not establish that a complete privacy review has been performed; review any additional evidence before publication.
