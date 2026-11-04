@@ -14,8 +14,8 @@
 | Guided Pentest: Infrastructure | **Completed** | 2026-10-28 |
 | Dive Into Pentesting | **Completed** | 2026-10-28 |
 | Cyber Kill Chain | **Completed** | 2026-10-28 |
-| Penetration Testing Frameworks | **10% in progress when last observed; current status not visible** | 2026-10-28 |
-| Topic Rewind Recap (Penetration Testing Foundations) | **Not confirmed complete** | 2026-10-28 |
+| Penetration Testing Frameworks | **Completed** | 2026-11-04 |
+| Topic Transition Recap (Penetration Testing Foundations) | **Not confirmed complete** | 2026-11-04 |
 | Passive Reconnaissance | **Completed** | 2026-11-04 |
 | Active Reconnaissance | **In progress — 7%** | 2026-11-04 |
 | Protocols and Servers / Protocols and Servers 2 | **Not confirmed complete** | 2026-11-04 |
@@ -29,11 +29,11 @@
 | 2026-10-22 | 6% | First module complete; Guided Pentest: Web complete |
 | 2026-10-26 | 7% | Guided Pentest: Infrastructure complete; Dive Into Pentesting at 25% |
 | 2026-10-28 | **9%** | Dive Into Pentesting and Cyber Kill Chain complete; Penetration Testing Frameworks at 10% |
-| 2026-11-04 | **12%** | Passive Reconnaissance complete; Active Reconnaissance 7% in progress |
+| 2026-11-04 | **12%** | Penetration Testing Frameworks and Passive Reconnaissance complete; Active Reconnaissance 7% in progress |
 
 ## Next learning steps
 
-Continue **Active Reconnaissance**, then work through **Protocols and Servers** and **Protocols and Servers 2**. Revisit the collapsed **Penetration Testing Foundations** section to confirm the current status of Penetration Testing Frameworks and its recap. **Nmap** is visible but no completion is verified; exercises, commands or local homelab preparation do not by themselves establish completion of TryHackMe rooms.
+Continue **Active Reconnaissance**, then work through **Protocols and Servers** and **Protocols and Servers 2**. Penetration Testing Frameworks is now confirmed complete. **Topic Transition Recap** remains unconfirmed and should not be marked complete without evidence. **Nmap** is visible but no completion is verified; exercises, commands or local homelab preparation do not by themselves establish completion of TryHackMe rooms.
 
 ## Evidence and reporting boundaries
 
