@@ -1,6 +1,6 @@
 # TryHackMe — Jr Penetration Tester (In progress)
 
-**Last verified progress: 9% · 28 October 2026**
+**Last verified progress: 12% · 4 November 2026**
 
 [TryHackMe profile](https://tryhackme.com/p/macfarlane.jonathan) · [Completed Cyber Security 101 learning path](../certifications/tryhackme-cyber-security-101.md)
 
@@ -8,15 +8,19 @@
 
 | Item | Status | Evidence date |
 | --- | --- | --- |
-| Overall Jr Penetration Tester learning path | **9% complete** | 2026-10-28 |
+| Overall Jr Penetration Tester learning path | **12% complete** | 2026-11-04 |
 | Start Your Cyber Security Journey | **Completed** | 2026-10-28 |
 | Guided Pentest: Web | **Completed** | 2026-10-28 |
 | Guided Pentest: Infrastructure | **Completed** | 2026-10-28 |
 | Dive Into Pentesting | **Completed** | 2026-10-28 |
 | Cyber Kill Chain | **Completed** | 2026-10-28 |
-| Penetration Testing Frameworks | **In progress — 10%** | 2026-10-28 |
-| Topic Rewind Recap | **Not confirmed complete** | 2026-10-28 |
-| Network Reconnaissance and Nmap | **Upcoming; not confirmed started** | 2026-10-28 |
+| Penetration Testing Frameworks | **10% in progress when last observed; current status not visible** | 2026-10-28 |
+| Topic Rewind Recap (Penetration Testing Foundations) | **Not confirmed complete** | 2026-10-28 |
+| Passive Reconnaissance | **Completed** | 2026-11-04 |
+| Active Reconnaissance | **In progress — 7%** | 2026-11-04 |
+| Protocols and Servers / Protocols and Servers 2 | **Not confirmed complete** | 2026-11-04 |
+| Network Reconnaissance | **Started; Passive Reconnaissance complete** | 2026-11-04 |
+| Nmap | **Not confirmed started** | 2026-11-04 |
 
 ## Progress history
 
@@ -25,10 +29,11 @@
 | 2026-10-22 | 6% | First module complete; Guided Pentest: Web complete |
 | 2026-10-26 | 7% | Guided Pentest: Infrastructure complete; Dive Into Pentesting at 25% |
 | 2026-10-28 | **9%** | Dive Into Pentesting and Cyber Kill Chain complete; Penetration Testing Frameworks at 10% |
+| 2026-11-04 | **12%** | Passive Reconnaissance complete; Active Reconnaissance 7% in progress |
 
 ## Next learning steps
 
-Continue **Penetration Testing Frameworks**, then verify completion of **Topic Rewind Recap** before marking it complete. Network reconnaissance and Nmap are upcoming learning topics; exercises, commands or local homelab preparation do not by themselves establish completion of TryHackMe rooms.
+Continue **Active Reconnaissance**, then work through **Protocols and Servers** and **Protocols and Servers 2**. Revisit the collapsed **Penetration Testing Foundations** section to confirm the current status of Penetration Testing Frameworks and its recap. **Nmap** is visible but no completion is verified; exercises, commands or local homelab preparation do not by themselves establish completion of TryHackMe rooms.
 
 ## Evidence and reporting boundaries
 
