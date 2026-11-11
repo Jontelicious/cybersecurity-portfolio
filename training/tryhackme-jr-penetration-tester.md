@@ -1,6 +1,6 @@
 # TryHackMe — Jr Penetration Tester (In progress)
 
-**Last verified progress: 12% · 4 November 2026**
+**Last verified progress: 17% · 11 November 2026**
 
 [TryHackMe profile](https://tryhackme.com/p/macfarlane.jonathan) · [Completed Cyber Security 101 learning path](../certifications/tryhackme-cyber-security-101.md)
 
@@ -8,7 +8,7 @@
 
 | Item | Status | Evidence date |
 | --- | --- | --- |
-| Overall Jr Penetration Tester learning path | **12% complete** | 2026-11-04 |
+| Overall Jr Penetration Tester learning path | **17% complete** | 2026-11-11 |
 | Start Your Cyber Security Journey | **Completed** | 2026-10-28 |
 | Guided Pentest: Web | **Completed** | 2026-10-28 |
 | Guided Pentest: Infrastructure | **Completed** | 2026-10-28 |
@@ -17,10 +17,13 @@
 | Penetration Testing Frameworks | **Completed** | 2026-11-04 |
 | Topic Transition Recap (Penetration Testing Foundations) | **Completed** | 2026-11-04 |
 | Passive Reconnaissance | **Completed** | 2026-11-04 |
-| Active Reconnaissance | **In progress — 7%** | 2026-11-04 |
-| Protocols and Servers / Protocols and Servers 2 | **Not confirmed complete** | 2026-11-04 |
-| Network Reconnaissance | **Started; Passive Reconnaissance complete** | 2026-11-04 |
-| Nmap | **Not confirmed started** | 2026-11-04 |
+| Active Reconnaissance | **Completed** | 2026-11-06 |
+| Protocols and Servers | **Completed** | 2026-11-06 |
+| Protocols and Servers 2 | **Last observed 10% in progress; latest state not shown** | 2026-11-06 |
+| Network Reconnaissance | **Passive Reconnaissance, Active Reconnaissance, Protocols and Servers complete** | 2026-11-06 |
+| Nmap Live Host Discovery | **Completed** | 2026-11-11 |
+| Nmap Basic Port Scans | **In progress — 5%** | 2026-11-11 |
+| Nmap Advanced Port Scans / Nmap Post Port Scans | **Not confirmed complete** | 2026-11-11 |
 
 ## Progress history
 
@@ -30,10 +33,12 @@
 | 2026-10-26 | 7% | Guided Pentest: Infrastructure complete; Dive Into Pentesting at 25% |
 | 2026-10-28 | **9%** | Dive Into Pentesting and Cyber Kill Chain complete; Penetration Testing Frameworks at 10% |
 | 2026-11-04 | **12%** | Penetration Testing Frameworks, Topic Transition Recap, and Passive Reconnaissance complete; Active Reconnaissance 7% in progress |
+| 2026-11-06 | **14%** | Active Reconnaissance and Protocols and Servers complete; Protocols and Servers 2 observed at 10% |
+| 2026-11-11 | **17%** | Nmap Live Host Discovery complete; Nmap Basic Port Scans at 5%; other Nmap rooms not verified complete |
 
 ## Next learning steps
 
-Continue **Active Reconnaissance**, then work through **Protocols and Servers** and **Protocols and Servers 2**. Penetration Testing Frameworks is now confirmed complete. **Topic Transition Recap** is confirmed complete in a subsequent 2026-11-04 screenshot; the visible Penetration Testing Foundations section is fully checked off. **Nmap** is visible but no completion is verified; exercises, commands or local homelab preparation do not by themselves establish completion of TryHackMe rooms.
+Continue **Nmap Basic Port Scans**, focusing on TCP connect, TCP SYN and UDP scanning before advanced scans and service detection. Protocols and Servers 2 was last observed at 10% on November 6; the November 11 screenshot does not establish its latest status. Nmap Live Host Discovery is verified complete. Homelab practice is documented separately from TryHackMe room completion.
 
 ## Evidence and reporting boundaries
 
