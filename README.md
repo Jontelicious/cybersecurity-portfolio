@@ -9,7 +9,13 @@ This public portfolio presents selected, evidence-backed projects. The private w
 ## Learning milestones and certificates
 
 - **[TryHackMe — Cyber Security 101: Certificate of Completion](certifications/tryhackme-cyber-security-101.md)** — completed **22 October 2026**, with **45 hours 23 minutes** of recorded coursework. This is a learning-path completion credential, not the separate SEC1 professional certification. [TryHackMe profile](https://tryhackme.com/p/macfarlane.jonathan).
-- **[TryHackMe — Jr Penetration Tester progress](training/tryhackme-jr-penetration-tester.md)** — **12% complete as of 4 November 2026**. Penetration Testing Foundations, including Topic Transition Recap, is confirmed complete. Network Reconnaissance: Passive Reconnaissance completed; Active Reconnaissance at 7%. Nmap progress remains unconfirmed. [Notion progress tracker](https://app.notion.com/p/401fd2d660c6819eb0bbdbda62b84b22?pvs=204).
+- **[TryHackMe — Jr Penetration Tester progress](training/tryhackme-jr-penetration-tester.md)** — **17% complete as of 11 November 2026**. Nmap Live Host Discovery is complete and Nmap Basic Port Scans is 5% in progress; the intermediate 14% checkpoint from 6 November is recorded in the progress log. [Notion progress tracker](https://app.notion.com/p/401fd2d660c6819eb0bbdbda62b84b22?pvs=204).
+
+## Two-host study environment
+
+The permanent **Linux Mint primary** hypervisor retains the original Debian RouterVM, the separately developed Alpine RouterVM v2 and validation infrastructure. A separate **Fedora KDE portable** hypervisor supports coursework and demonstrations with a narrowed Debian routing fallback, Kali PentestVM, encrypted PrivateVM and an offline Windows 11 MalwareVM. Their firewall and encryption layers are distinct; tests on one host do not validate the other.
+
+[Portable homelab case study](projects/portable-homelab.md) · [RouterVM v2 case study](projects/routervm-v2.md). Detailed configurations and unreviewed raw evidence remain outside this public portfolio.
 
 ## Featured projects
 
@@ -33,7 +39,7 @@ The host assessment included service exposure, account privileges, integrity mon
 
 ![RouterVM nftables rule counter showing blocked LAN3 traffic](router-vm/evidence/nftables-drop-counter.png)
 
-The current RouterVM forwards permitted traffic toward WAN while isolating LAN3 from the other internal segments. During a controlled post-restart ICMP test, AgentVM sent three requests to Client1; the relevant nftables isolation counter increased from **0 to 3 packets (252 bytes)**. Separate tests confirmed the AgentVM could still reach its gateway and an external IPv4 endpoint.
+The historically documented Debian RouterVM policy forwards permitted traffic toward WAN while isolating LAN3 from the other internal segments. During a controlled post-restart ICMP test, AgentVM sent three requests to Client1; the relevant nftables isolation counter increased from **0 to 3 packets (252 bytes)**. Separate tests confirmed the AgentVM could still reach its gateway and an external IPv4 endpoint.
 
 [Read the RouterVM case study →](router-vm/README.md) · [View the network topology →](diagrams/router-vm-topology.md)
 
@@ -41,11 +47,12 @@ The current RouterVM forwards permitted traffic toward WAN while isolating LAN3 
 
 | Component | Purpose |
 | --- | --- |
-| **Linux Mint host** | Workstation and hypervisor |
+| **Linux Mint host (primary)** | Permanent workstation and hypervisor; legacy Debian RouterVM and separate Alpine v2 work |
 | **KVM/QEMU · libvirt · virt-manager** | Virtual machines and isolated virtual networks |
-| **Debian RouterVM** | Routing, nftables filtering, NAT, and dnsmasq DHCP/DNS |
+| **Debian RouterVM (historical Mint lab)** | Routing, nftables filtering, NAT, and dnsmasq DHCP/DNS |
 | **Debian client VMs** | Testing routing and segment-to-segment policies |
-| **Fedora AgentVM** | Isolated environment for experimenting with coding-agent tools |
+| **Fedora AgentVM (guest)** | Isolated environment for experimenting with coding-agent tools |
+| **Fedora KDE laptop (portable host)** | Separate encrypted hypervisor for course VMs and demonstrations |
 | **Tailscale** | Access to authorized school lab resources; access details are not published |
 
 ### Tools and techniques used
