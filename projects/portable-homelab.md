@@ -19,7 +19,7 @@ Maintain a permanent Linux Mint/KVM homelab while building an independent Fedora
 
 ## Design rationale
 
-Isolation relies on **multiple independent boundaries**: encrypted host/guest storage, libvirt network attachments, router forwarding policy, host firewalld controls, guest nftables/UFW, and application-level data sharing decisions. In particular, the PentestVM is not assumed to reach the network through the AgentVM's fallback router. The malware-analysis guest is treated as offline after its adapter removal, not as a general-purpose workstation.
+Storage encryption protects data at rest. Runtime separation uses libvirt network attachments, router forwarding policy, host firewalld controls, guest nftables/UFW, and application-level data sharing restrictions. These controls address different risks and require separate verification. In particular, the PentestVM is not assumed to reach the network through the AgentVM's fallback router. The malware-analysis guest is treated as offline after its adapter removal, not as a general-purpose workstation.
 
 A historical Fedora RouterVM migration report recorded exactly two fallback-related networks as of 6 November. A separate vulnerable-lab network was created afterward; those snapshots should not be conflated.
 
