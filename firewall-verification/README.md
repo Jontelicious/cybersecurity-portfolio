@@ -1,148 +1,305 @@
-# RouterVM firewall policy verification
+# RouterVM Firewall Policy Verification
 
-A repeatable IPv4 verification project for a Debian router with two communicating
-lab networks and a separately isolated agent network. The school assignment
-explicitly requires LAN1 ↔ LAN2 forwarding. LAN3 isolation is an additional lab
-requirement; LAN1/LAN2 communication is intentional, not a firewall defect.
+**Project type:** Educational networking and security engineering  
+**Environment:** Linux Mint primary homelab, Debian RouterVM, KVM/QEMU, libvirt  
+**Technologies:** Python 3, nftables, dnsmasq, TCP/IP, DNS, DHCP, NAT  
+**Verification date:** 19 October 2026  
+**Status:** Completed verification of selected IPv4 policies, with documented limitations
 
-## Verified manually on 2026-10-19
+## 1. Objective and problem
 
-| Area | Observed evidence | Scope |
-|---|---|---|
-| LAN1 ↔ LAN2 | Fresh TCP/22 connections succeeded in both directions; each directional accept counter increased by one packet | Two IPv4 TCP paths |
-| LAN3 ↔ LAN1/LAN2 | Four TCP/22 probes timed out; the two grouped RouterVM drop counters each increased by 6 packets / 360 bytes | Corroborated blocking during the probe interval; grouped counters do not identify each probe individually |
-| DNS | UDP and TCP queries to each LAN's router address returned NOERROR and A answers | Router-provided resolution of example.com |
-| Internet | Each VM received HTTP/2 200 over IPv4 HTTPS with proxies bypassed | Connectivity and working return traffic for these sessions |
-| NAT | Paired LAN-ingress/WAN-egress SYN packets show each source translated to 192.168.122.89 | RouterVM source NAT, before any subsequent Mint/libvirt NAT |
-| DHCP | client1/client2 completed DISCOVER/OFFER/REQUEST/ACK; agent-vm had REQUEST/ACK entries | Server-side journal and lease evidence; no forced renewals |
-| Services | nftables and dnsmasq both enabled and active | Startup configuration and current state; no new reboot test |
+This project evaluates whether a virtualized Debian RouterVM enforces the network forwarding policies required by a school networking assignment and an additional personal homelab isolation requirement.
 
-[Logging change and retest](logging-validation-2026-10-19.md) ·
-[Detailed evidence and limitations](evidence-2026-10-19.md) ·
-[Test matrix](test-matrix.md) · [Checker](check_firewall.py)
+The original assignment requires communication between LAN1 and LAN2, while allowing both networks to access external services. A third network, LAN3, was added for AgentVM and configured to prevent new connections between that network and the two coursework LANs.
 
-## Network
+The objective was to verify the intended behavior using positive and negative tests rather than relying only on firewall configuration inspection or unsuccessful connections.
 
-| Node | IPv4 | Default gateway / DNS |
-|---|---|---|
-| client1 (hostname klient1) | 10.1.10.10/24 | 10.1.10.254 |
-| client2 (hostname klient2) | 10.1.20.10/24 | 10.1.20.254 |
-| agent-vm | 10.1.30.10/24 | 10.1.30.254 |
+I also developed a Python checker to make the client-side tests repeatable and preserve structured evidence.
 
-Router interfaces: WAN enp1s0=192.168.122.89/24; LAN1 enp7s0; LAN2 enp8s0;
-LAN3 enp9s0. WAN gateway is 192.168.122.1. Documented dynamic pools are
-.100–.200 on each LAN with 12-hour leases. client1/client2 have reserved .10
-addresses with infinite leases; agent-vm has reserved .10 with a 12-hour lease.
+## 2. Technical environment
 
-## Run the checker
+The project runs on the primary Linux Mint KVM/libvirt homelab.
 
-Requires Linux, Python 3, iproute2, dig and curl. These were found on all three
-VMs. Run as an ordinary user directly on the selected VM, not inside Hermes's
-container or on Mint. From this project directory on Mint, copy the reviewed script using existing SSH:
+| Component | Purpose |
+| --- | --- |
+| Debian RouterVM | IPv4 routing, nftables firewall, NAT and dnsmasq services |
+| Client1 — LAN1 | Coursework network client |
+| Client2 — LAN2 | Coursework network client |
+| AgentVM — LAN3 | Additional isolated development network |
+| Python checker | Client-side connectivity and application-level verification |
 
-```bash
-scp check_firewall.py bastion@10.1.10.10:check_firewall.py
-scp check_firewall.py bastion@10.1.20.10:check_firewall.py
-scp check_firewall.py bastion@10.1.30.10:check_firewall.py
-```
+The WAN connects through libvirt NAT. The three internal networks use separate virtual interfaces and subnets.
 
-Then, respectively on each VM:
+This environment is distinct from the later Alpine RouterVM v2 implementation and the Fedora laptop's temporary Debian routing fallback.
 
-```bash
-python3 -B check_firewall.py --node client1 --output client1-results.json
-python3 -B check_firewall.py --node client2 --output client2-results.json
-python3 -B check_firewall.py --node agent-vm --output agent-results.json
-```
+[Historical network topology](../diagrams/router-vm-topology.md)
 
-Each command belongs on its matching VM. The script verifies the expected source
-address and default gateway before probing, binds TCP/DNS/HTTPS probes to that
-source address, checks local SSH, probes the two other clients' TCP/22 ports,
-queries the router over UDP/TCP DNS, and makes one HTTPS HEAD request to
-example.com. It makes a small, fixed set of connections; it does not scan ports,
-authenticate to SSH, change rules, restart services or renew DHCP. Output files
-must be new: choose a new name for each repeat. TLS verification remains enabled.
+### Expected forwarding policy
 
-Results use three statuses:
+| Traffic path | Expected behavior |
+| --- | --- |
+| LAN1 → LAN2 | Allow |
+| LAN2 → LAN1 | Allow |
+| LAN1/LAN2/LAN3 → WAN | Allow |
+| LAN3 → LAN1/LAN2 | Block new connections |
+| LAN1/LAN2 → LAN3 | Block new connections |
+| Other unmatched forwarding | Drop |
 
-- PASS: an expected allowed connection or application check succeeded.
-- FAIL: a required allowed check failed, or a prohibited peer connection succeeded.
-- NEEDS_ROUTER_EVIDENCE: a prohibited connection timed out or returned a socket
-  error. This is not automatically a confirmed block. A host firewall, route,
-  service failure or other cause could explain it.
+Stateful established/related traffic is handled before the segment-specific restrictions. The policy table therefore does not imply that pre-existing connections are necessarily terminated.
 
-Exit codes: 0 means all automated checks passed; 1 means at least one FAIL;
-2 means a setup problem or manual router evidence is still needed (also used by
-argparse for invalid arguments). Expected isolation probes normally produce exit
-2. Read the JSON and error text; do not interpret a nonzero exit as automatically
-meaning broken isolation. Output-file creation errors produce a short setup-error
-message and exit 2 before any probes run. Missing tools fail the relevant checks
-explicitly.
+The complete test expectations are recorded in the [test matrix](test-matrix.md).
 
-The script was run on all three actual VMs on 2026-10-19: **14 PASS, four
-NEEDS_ROUTER_EVIDENCE, no FAIL**. New RouterVM counter snapshots corroborate the
-isolation timeouts. See the [live checker validation](live-checker-validation-2026-10-19.md)
-for timestamps, counter changes and attribution limits. Seven checker tests
-passed on Mint for the live-tested version. The subsequent output-file error
-handling fix adds a regression test: eight tests pass locally. The archived live
-reports retain their original checker hash; network probe logic is unchanged.
+## 3. Implementation
 
-```bash
+### Firewall and network services
+
+The Debian RouterVM uses:
+
+- **nftables** for packet filtering, forwarding policy and source NAT.
+- **dnsmasq** for DHCP and DNS services on the internal networks.
+- **IPv4 forwarding** for permitted traffic between networks and toward WAN.
+- **Connection tracking** to support permitted return traffic.
+
+The firewall separates allowed traffic from prohibited new connections. LAN1 ↔ LAN2 communication is intentionally permitted to satisfy the original assignment.
+
+LAN3 isolation is an additional security boundary introduced for the personal homelab.
+
+### Python verification checker
+
+I developed [check_firewall.py](check_firewall.py) to run a controlled set of checks from the designated virtual machines.
+
+The checker:
+
+1. Confirms the expected source IPv4 address and default gateway before probing.
+2. Tests local TCP/22 connectivity as a positive control.
+3. Tests permitted and prohibited TCP/22 connections between lab clients.
+4. Queries the router's DNS service over UDP and TCP.
+5. Performs an IPv4 HTTPS HEAD request with proxies bypassed.
+6. Produces a structured JSON report containing observations, classifications and supporting output.
+
+The script uses explicit source addresses and a fixed set of known lab peers. It does not perform general port scanning, authenticate to SSH, modify firewall rules or restart services.
+
+### Result classification
+
+The checker uses three result statuses:
+
+| Status | Meaning |
+| --- | --- |
+| `PASS` | An expected allowed behavior was observed |
+| `FAIL` | A required check failed or a prohibited TCP connection succeeded |
+| `NEEDS_ROUTER_EVIDENCE` | A prohibited connection was unsuccessful, but its cause has not been established |
+
+A timeout alone cannot prove that RouterVM blocked the traffic. A host firewall, missing listener, routing problem or other condition might explain the same observation.
+
+For that reason, prohibited-path timeouts require supporting router-side evidence before drawing conclusions about policy enforcement.
+
+## 4. Testing and verification
+
+### Initial manual verification
+
+Manual testing on 19 October 2026 covered:
+
+- Bidirectional LAN1/LAN2 TCP/22 connectivity.
+- Four prohibited TCP/22 paths between LAN3 and the coursework LANs.
+- DNS resolution over UDP and TCP.
+- Direct IPv4 HTTPS sessions.
+- Router-side NAT observations.
+- DHCP lease and service-status evidence.
+
+The observed LAN1/LAN2 accept counters increased during successful connectivity tests.
+
+The LAN3 isolation counters also increased during prohibited connection attempts, corroborating blocking at the router rather than relying solely on timeouts.
+
+[Manual verification evidence](evidence-2026-10-19.md)
+
+### Automated checker validation
+
+The checker was subsequently run on all three designated virtual machines.
+
+| Node | PASS | NEEDS_ROUTER_EVIDENCE | FAIL |
+| --- | ---: | ---: | ---: |
+| Client1 | 5 | 1 | 0 |
+| Client2 | 5 | 1 | 0 |
+| AgentVM | 4 | 2 | 0 |
+| **Total** | **14** | **4** | **0** |
+
+All three machines passed their source-address and default-gateway preflight checks.
+
+The four prohibited TCP connections timed out. Their original reports retained `NEEDS_ROUTER_EVIDENCE` rather than being rewritten as automated passes.
+
+During this run, both grouped LAN3 isolation counters increased by six packets and 360 bytes. These counters corroborate drops during the probe interval but do not independently identify every source/destination pair.
+
+[Live checker validation](live-checker-validation-2026-10-19.md)
+
+### Logging improvement and retest
+
+After the initial validation, separate rate-limited logging rules were added before the existing unconditional LAN3 drop rules.
+
+The revised configuration was loaded and the checker was run again.
+
+The subsequent kernel journal recorded all four prohibited TCP/22 paths, with source/destination addresses, interfaces and matching drop-counter observations.
+
+This provided stronger path-specific evidence than the initial grouped counters alone.
+
+The logging rules use separate rate limits of five events per second with a burst allowance of five. The following drop rules remain unconditional.
+
+The rate-limit configuration was observed loaded, but sustained high-volume logging behavior was not tested.
+
+[Logging change and retest](logging-validation-2026-10-19.md)
+
+### Checker unit tests
+
+The Python test suite covers:
+
+- Timeout and socket-error classification.
+- Unexpectedly successful prohibited connections.
+- A real loopback TCP positive control.
+- DNS response classification.
+- Prevention of probes when machine preflight fails.
+- Output-file error handling without overwriting existing reports.
+- Separation of automated results from router evidence requirements.
+
+Seven tests passed for the version used in the recorded live runs.
+
+A subsequent correction to output-file error handling introduced an additional regression test, bringing the locally recorded result to **eight passing tests**.
+
+The archived live reports retain the original checker hash. The correction did not change the network probe logic.
+
+To run the local tests:
+
+```bash id="g8yrlk"
+cd firewall-verification
 python3 -B -m unittest discover -s tests -v
 ```
 
-## Router-side evidence for each repeat
+## 5. Reproducing client-side checks
 
-Before and after the peer probes, save the forward chain on RouterVM:
+The checker requires Linux, Python 3, `ip`, `dig` and `curl`.
 
-```bash
+Run it directly on an appropriately configured, authorized lab VM using the node identifier matching that machine.
+
+For Client1:
+
+```bash id="kzl4eo"
+python3 -B check_firewall.py \
+  --node client1 \
+  --output client1-results.json
+```
+
+For Client2:
+
+```bash id="5bs4dp"
+python3 -B check_firewall.py \
+  --node client2 \
+  --output client2-results.json
+```
+
+For AgentVM:
+
+```bash id="hexlzf"
+python3 -B check_firewall.py \
+  --node agent-vm \
+  --output agent-results.json
+```
+
+The checker refuses to overwrite an existing output file. Use a new filename for each run.
+
+Exit codes:
+
+| Code | Meaning |
+| --- | --- |
+| `0` | All automated checks passed |
+| `1` | At least one check failed |
+| `2` | A setup problem occurred or manual router evidence remains necessary |
+
+Invalid command-line arguments also produce exit code 2.
+
+Expected isolation timeouts commonly produce exit code 2. This is not automatically a failed firewall policy.
+
+### Router-side corroboration
+
+Record the relevant RouterVM forwarding counters before and after the selected probes:
+
+```bash id="n8w9t8"
 sudo nft -a list chain inet filter forward
 ```
 
-Do not reset counters or reload the firewall between snapshots. Compare the rules
-by interface/verdict, not permanently by handle: handles can change after reload.
-LAN3 isolation rules group both other LANs. To attribute a particular path more
-precisely, snapshot counters around one probe at a time, keeping background
-traffic quiet, or use a targeted packet capture. The script cannot automatically
-attribute these grouped counter changes or assess conntrack policy exceptions.
+Do not reset counters or reload the firewall between snapshots.
 
-For NAT, start this on RouterVM and then run the fixed-address HTTPS request on
-one client at a time. The address below is a historical example.com address,
-not a promise of future availability; verify/update the target for future runs.
+Compare the matching rules and their packet/byte counter changes. Grouped counters may include retransmissions or unrelated traffic, so a precise conclusion may require individual probes or targeted packet-capture evidence.
 
-```bash
-sudo timeout 60 tcpdump -pni any -nn -c 30 \
-  'ip and tcp dst port 443 and (tcp[tcpflags] & (tcp-syn|tcp-ack) = tcp-syn) and dst host 104.20.23.154'
-```
+The checker does not independently verify NAT translations, DHCP lease exchanges, service persistence or every firewall drop.
 
-```bash
-curl -4 --noproxy '*' --resolve example.com:443:104.20.23.154 \
-  -I --connect-timeout 5 --max-time 15 https://example.com
-```
+## 6. Results and limitations
 
-Capture a LAN-ingress and WAN-egress SYN pair matching destination, sequence and
-port. This separate fixed-IP test provides NAT evidence; ordinary successful
-HTTPS alone does not locate the translation. The -p capture option avoids the
-irrelevant promiscuous-mode warning for the any device. A timeout exit from the
-capture can simply indicate that the observation window ended.
+### Verified outcomes
 
-## Remaining work and limits
+The recorded work demonstrates:
 
-- Live reports and accompanying router counters have been reviewed; broader
-  policy and logging checks below remain open.
-- RouterVM INPUT policy permits LAN DNS/DHCP and WAN-subnet SSH; those SSH policy
-  directions and unsolicited WAN ingress have not been tested in this
-  verification session.
-- LAN3 denial logging was added and verified at 09:05 CEST: all four prohibited
-  TCP/22 paths appear in the kernel journal with matching drop counters. Logging
-  has a separate limit of 5/second, burst 5, in each direction; drops remain
-  unconditional. Sustained-traffic rate-limit behaviour and other denial logging
-  paths have not been tested. See the linked logging retest.
-- AgentVM firewalld permits SSH from Mint's 10.1.30.1 only; RouterVM's .254 source
-  is rejected. This is a separate host boundary. It was preserved, not loosened
-  to make a positive control pass. RouterVM can reach client1/client2 SSH;
-  agent-vm's local SSH listener and Mint SSH access are confirmed.
-- IPv6, arbitrary protocols/ports, spoofing, VM/container breakout and established
-  sessions surviving policy changes remain outside these tests. RouterVM accepts
-  established/related forwarding before the isolation rules.
-- No school credentials, VPN data or desktop screenshots are included. Evidence
-  is transcribed from user-run terminal output, not an independent remote audit.
+- Permitted new TCP/22 communication between LAN1 and LAN2.
+- Router-corroborated blocking of four tested new TCP/22 connections involving LAN3.
+- Working UDP/TCP DNS responses from the expected router gateways.
+- Successful direct IPv4 HTTPS requests from all three clients.
+- Observed source NAT translation at RouterVM through matching packet pairs.
+- DHCP service evidence from lease records and server journal entries.
+- Path-specific LAN3 denial logging in the subsequent retest.
+- Eight passing local checker tests after the output-file correction.
+
+These results apply to the documented October 2026 configuration and tests.
+
+### Limitations
+
+The project does not establish:
+
+- Comprehensive firewall correctness across all ports or protocols.
+- IPv6 isolation or forwarding behavior.
+- Protection against spoofing or VM/container breakout.
+- Isolation of established sessions after firewall policy changes.
+- Complete validation of RouterVM INPUT policy and WAN-side SSH restrictions.
+- Exhaustive firewall logging or rate-limit behavior.
+- Service persistence after a new host reboot during this verification session.
+- Independent reproduction of the original terminal observations.
+
+AgentVM also had a separate host firewall restriction affecting SSH from RouterVM. This control was preserved rather than relaxed to produce a successful connection. RouterVM counter and journal evidence were therefore important when attributing the prohibited-path observations.
+
+The source material consists of recorded user-run terminal output, JSON reports and reviewed firewall observations. It is not an independent third-party security audit.
+
+## 7. Lessons learned
+
+**A failed connection is not automatically evidence of firewall enforcement.** Negative tests require positive controls and evidence from the system expected to block the traffic.
+
+**Requirements matter when evaluating a policy.** The original assignment required LAN1/LAN2 communication. Treating their permitted forwarding as a defect would have been an incorrect interpretation of the requirements.
+
+**Automated tests and router observations serve different purposes.** The Python checker provides repeatable client-side observations, while counters, logs and packet captures support conclusions about forwarding and translation.
+
+**Changes require separate verification.** Adding denial logging was followed by another controlled test rather than being treated as automatically successful.
+
+**Evidence needs explicit boundaries.** Packet counters, service status, successful HTTPS responses and passing unit tests each support different conclusions.
+
+## 8. Supporting evidence
+
+| Resource | Contents |
+| --- | --- |
+| [Test matrix](test-matrix.md) | Expected policy and individual test coverage |
+| [Python checker](check_firewall.py) | Repeatable IPv4 client-side verification |
+| [Checker unit tests](tests/test_checker.py) | Test classification and error handling |
+| [Manual evidence](evidence-2026-10-19.md) | Connectivity, NAT, DNS, DHCP and services |
+| [Live checker results](live-checker-validation-2026-10-19.md) | Three-machine automated validation |
+| [Logging retest](logging-validation-2026-10-19.md) | Path-specific denied-traffic observations |
+| [Historical RouterVM topology](../diagrams/router-vm-topology.md) | Network architecture and policy context |
+
+## 9. Remaining work
+
+Further verification could cover:
+
+- RouterVM INPUT and WAN-side SSH policy.
+- Additional TCP/UDP protocols and IPv6 behavior.
+- Stateful connections across policy changes.
+- Logging under sustained traffic.
+- Persistence after relevant guest and host restarts.
+
+These are future validation opportunities, not completed results.
+
+---
+
+**Scope:** Authorized educational and personal homelab testing. Historical evidence is retained with its original dates and limitations. Sensitive operational details should be reviewed before any additional public release.
