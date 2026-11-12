@@ -1,28 +1,78 @@
-# RouterVM network topology — current layout
+# Debian RouterVM — Historical Linux Mint Network Topology
 
-This diagram reflects the interfaces and routes reported on 2026-10-16. LAN3 was added for the isolated AgentVM network. The AgentVM's DHCP lease was subsequently verified from its Fedora console: `10.1.30.10/24` with default gateway `10.1.30.254`.
+**Environment:** Linux Mint primary homelab, KVM/QEMU and libvirt
+
+**Router implementation:** Original Debian RouterVM
+
+**Configuration checkpoint:** 16 October 2026
+
+**Status:** Historical, evidence-bounded documentation
+
+## Overview
+
+This diagram illustrates the documented Debian RouterVM network architecture used in the Linux Mint homelab.
+
+The environment includes a WAN connection through libvirt NAT, two coursework LAN segments and an additional LAN3 segment for AgentVM.
+
+This is not the Alpine RouterVM v2 topology or the separate Fedora portable RouterVM fallback.
+
+## Network topology
 
 ```mermaid
 flowchart TD
     Internet["External networks"]
-    Upstream["libvirt NAT<br/>Gateway 192.168.122.1"]
-    Router["Debian RouterVM<br/>WAN enp1s0: 192.168.122.89<br/>LAN1 enp7s0: 10.1.10.254<br/>LAN2 enp8s0: 10.1.20.254<br/>LAN3 enp9s0: 10.1.30.254"]
-    C1["Client1 Debian<br/>10.1.10.10"]
-    C2["Client2 Debian<br/>10.1.20.10"]
-    Agent["Fedora AgentVM<br/>10.1.30.10/24 (DHCP)"]
+    Upstream["libvirt NAT"]
+    Router["Debian RouterVM<br/>nftables · dnsmasq · IPv4 routing"]
+    Client1["Debian Client1"]
+    Client2["Debian Client2"]
+    Agent["Fedora AgentVM"]
+
     Internet <--> Upstream
-    Upstream <--> Router
-    Router <--> |"LAN1 10.1.10.0/24"| C1
-    Router <--> |"LAN2 10.1.20.0/24"| C2
-    Router <--> |"LAN3 10.1.30.0/24"| Agent
+    Upstream <--> |WAN| Router
+    Router <--> |LAN1| Client1
+    Router <--> |LAN2| Client2
+    Router <--> |LAN3| Agent
 ```
 
-## Current firewall policy (assignment-aligned, with an added LAN3)
+## Documented forwarding policy
 
-- All three LANs have explicit permission to forward new traffic to WAN, with IPv4 masquerading for their respective subnets.
-- LAN1 ↔ LAN2 forwarding is explicitly **allowed** in the active ruleset.
-- LAN3 ↔ LAN1/LAN2 forwarding is explicitly **denied** for new connections.
-- Stateful established/related rules precede segment-specific rules.
-- Input and forward chains default to drop, with rate-limited logging for unmatched traffic.
+| Traffic path | Documented policy |
+| --- | --- |
+| LAN1 → WAN | Allowed |
+| LAN2 → WAN | Allowed |
+| LAN3 → WAN | Allowed |
+| LAN1 ↔ LAN2 | Allowed |
+| LAN3 → LAN1/LAN2 | Denied for new forwarded connections |
+| LAN1/LAN2 → LAN3 | Denied for new forwarded connections |
+| Other unmatched forwarding | Default drop |
 
-See [the active nftables snapshot](../router-vm/configs/active-nftables-snapshot-2026-10-16.md). These are ruleset observations, not proof of newly executed connectivity tests. The original two-LAN assignment required LAN1 ↔ LAN2 connectivity. Earlier observed blocking was not assignment-compliant; LAN3 isolation is the later additional policy.
+The documented ruleset includes IPv4 source NAT toward WAN, stateful connection tracking and rate-limited logging.
+
+Established and related connections are accepted before the segment-specific drop rules. As a result, the table describes the intended handling of new forwarded connections, not a guarantee that every pre-existing flow was terminated.
+
+## Verification scope
+
+The historical project documentation includes controlled connectivity tests and corresponding firewall-counter observations.
+
+These observations support conclusions about the specific tested paths, but they do not prove that every possible protocol, destination, traffic state or IPv6 path was examined.
+
+The original school assignment required communication between LAN1 and LAN2. Their allowed forwarding policy is therefore intentional, not a segmentation defect.
+
+LAN3 isolation was introduced as an additional homelab requirement.
+
+## Related evidence
+
+- [Debian RouterVM case study](../router-vm/README.md)
+- [Dated nftables configuration snapshot](../router-vm/configs/active-nftables-snapshot-2026-10-16.md)
+- [Firewall policy verification](../firewall-verification/README.md)
+
+## Architecture boundaries
+
+This diagram applies only to the historical Debian RouterVM configuration on the Linux Mint host.
+
+The Alpine RouterVM v2 and the Fedora portable fallback have different architectures, deployment states and verification records.
+
+For those environments, see:
+
+- [RouterVM v2 case study](../projects/routervm-v2.md)
+- [Fedora portable homelab](../projects/portable-homelab.md)

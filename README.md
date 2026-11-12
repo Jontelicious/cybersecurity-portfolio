@@ -1,92 +1,137 @@
 # Cybersecurity Portfolio
 
-**A hands-on cybersecurity and penetration-testing portfolio focused on Linux security, network segmentation, and evidence-based testing.**
+**Cybersecurity and penetration-testing student | Linux security · Network segmentation · Python · Security verification**
 
-I am documenting practical work from my cybersecurity and penetration-testing studies in a private, virtualized lab. Each case study emphasizes **what was configured, why it mattered, how it was verified, and what remains untested**—rather than treating a scanner finding or a successful ping as proof on its own.
+This repository documents selected work from my cybersecurity studies and independent homelab projects. My focus is on implementing security controls, testing whether they behave as intended, and documenting both the results and their limitations.
 
-This public portfolio presents selected, evidence-backed projects. The private working homelab repository is maintained separately.
+The projects include Linux host hardening, virtualized network security, firewall verification, Python tooling and controlled AI-assisted software engineering experiments.
 
-## Learning milestones and certificates
-
-- **[TryHackMe — Cyber Security 101: Certificate of Completion](certifications/tryhackme-cyber-security-101.md)** — completed **22 October 2026**, with **45 hours 23 minutes** of recorded coursework. This is a learning-path completion credential, not the separate SEC1 professional certification. [TryHackMe profile](https://tryhackme.com/p/macfarlane.jonathan).
-- **[TryHackMe — Jr Penetration Tester progress](training/tryhackme-jr-penetration-tester.md)** — **17% complete as of 11 November 2026**. Nmap Live Host Discovery is complete and Nmap Basic Port Scans is 5% in progress; the intermediate 14% checkpoint from 6 November is recorded in the progress log. [Notion progress tracker](https://app.notion.com/p/401fd2d660c6819eb0bbdbda62b84b22?pvs=204).
-
-## Two-host study environment
-
-The permanent **Linux Mint primary** hypervisor retains the original Debian RouterVM, the separately developed Alpine RouterVM v2 and validation infrastructure. A separate **Fedora KDE portable** hypervisor supports coursework and demonstrations with a narrowed Debian routing fallback, Kali PentestVM, encrypted PrivateVM and an offline Windows 11 MalwareVM. Their firewall and encryption layers are distinct; tests on one host do not validate the other.
-
-[Portable homelab case study](projects/portable-homelab.md) · [RouterVM v2 case study](projects/routervm-v2.md). Detailed configurations and unreviewed raw evidence remain outside this public portfolio.
+All work is presented as educational or personal technical experience, not professional employment.
 
 ## Featured projects
 
-| Project | What I built or assessed | Verified outcome |
+| Project | Technical focus | Documented results |
 | --- | --- | --- |
-| **[Linux Mint Security Assessment & Hardening](linux-hardening/README.md)** | Assessed and hardened a Linux Mint KVM/libvirt host using Lynis, LinPEAS, chkrootkit, auditd, AIDE, and targeted configuration reviews. | **Lynis 70 → 76/100**, seven loaded audit rules, reduced unnecessary service/privilege exposure, kernel settings surviving reboot; [screenshots](linux-hardening/README.md#selected-verification-evidence). |
-| **[Debian RouterVM — Segmented Network Lab](router-vm/README.md)** | Configured routing, DHCP/DNS, NAT, and default-drop nftables policies across three internal virtual networks. | Verified allowed LAN3 gateway/internet connectivity and blocked LAN3 → LAN1 traffic; nftables drop counter changed **0 → 3 packets** for the reproduced test; [screenshots](router-vm/README.md#verification-screenshots). |
-| **[RouterVM Firewall Policy Verification](firewall-verification/README.md)** | Defined assignment-aligned traffic expectations; tested TCP paths, DNS, HTTPS, DHCP and source NAT; built a repeatable client checker. | Live checker validation on all three VMs: **14 PASS, four isolation timeouts corroborated by router counters, no FAIL**; eight local checker tests pass after the output-file error-handling fix (seven for the live-tested version). Separate NAT/DHCP evidence recorded. |
-| **[Cross-Agent Code Review — AI Agent Skills Benchmark](ai-agent-evaluation/README.md)** | Developed an offline Nmap XML CLI independently with Codex and OpenCode, then performed reciprocal read-only reviews and targeted repairs. | Initial suites: **17 and 13 tests passed**; cross-review identified previously missed defects; final independent verification: **20 tests passed**, including nine frozen fixture outcomes. |
-| **[Network Monitoring](network-monitoring/README.md)** | Packet analysis and detection engineering. | **Planned** — not presented as a completed implementation. |
+| **[Firewall Policy Verification](firewall-verification/README.md)** | Python, nftables, network security testing | 14 passing live checks, four isolation timeouts corroborated by firewall counters, and no recorded failures in the documented test run. |
+| **[Linux Mint Security Assessment & Hardening](linux-hardening/README.md)** | Linux hardening, auditing, system integrity | Lynis hardening index improved from 70 to 76; selected audit and kernel settings verified. |
+| **[Debian RouterVM — Network Segmentation](router-vm/README.md)** | KVM/libvirt, routing, NAT, DHCP/DNS, nftables | Tested permitted connectivity and LAN3 isolation, including a reproducible firewall counter increase. |
+| **[Cross-Agent Code Review](ai-agent-evaluation/README.md)** | Python, secure input handling, automated testing, AI-agent evaluation | Cross-review uncovered defects missed by initial passing tests; final independent verification recorded 20 passing tests. |
 
-### Linux host hardening: assessment to verification
+Results describe the specific documented configurations and test runs. They do not establish comprehensive security assurance or imply that all subsequent configurations were tested.
 
-![Post-reboot kernel hardening sysctl checks](linux-hardening/evidence/kernel-hardening.png)
+## Homelab infrastructure
 
-The host assessment included service exposure, account privileges, integrity monitoring, audit coverage, and kernel configuration. A later Lynis assessment recorded **76/100** versus the initial **70/100**. The score is a configuration-hardening indicator, **not a percentage of security achieved**.
+I maintain two separate Linux virtualization environments for cybersecurity coursework and technical experimentation.
 
-[Read the full Linux hardening case study →](linux-hardening/README.md)
+### Linux Mint — primary homelab
 
-### RouterVM: tested network boundaries
+The permanent Linux Mint environment uses KVM/QEMU, libvirt and virt-manager.
 
-![RouterVM nftables rule counter showing blocked LAN3 traffic](router-vm/evidence/nftables-drop-counter.png)
+Its documented work includes:
 
-The historically documented Debian RouterVM policy forwards permitted traffic toward WAN while isolating LAN3 from the other internal segments. During a controlled post-restart ICMP test, AgentVM sent three requests to Client1; the relevant nftables isolation counter increased from **0 to 3 packets (252 bytes)**. Separate tests confirmed the AgentVM could still reach its gateway and an external IPv4 endpoint.
+- An original Debian RouterVM with routing, NAT, DHCP/DNS and segmented virtual networks.
+- Firewall policy implementation and independent connectivity verification.
+- Linux host hardening and system auditing.
+- A separate Alpine-based RouterVM v2 implementation undergoing bounded validation.
 
-[Read the RouterVM case study →](router-vm/README.md) · [View the network topology →](diagrams/router-vm-topology.md)
+**Documentation:** [Debian RouterVM](router-vm/README.md) · [Firewall Verification](firewall-verification/README.md) · [RouterVM v2](projects/routervm-v2.md)
 
-## Lab environment
+### Fedora KDE — portable homelab
 
-| Component | Purpose |
+The separate Fedora laptop provides a portable environment for coursework and demonstrations.
+
+Documented components include:
+
+- A temporary Debian RouterVM fallback for selected guest connectivity.
+- Kali PentestVM with vulnerable-lab forwarding controls.
+- An encrypted PrivateVM with host and guest firewall protections.
+- A Windows 11 MalwareVM with BitLocker, FLARE-VM tooling and an offline configuration.
+
+Host storage encryption, virtual networking, guest security controls and isolation testing are documented separately. A configured control is not automatically treated as a completely verified security boundary.
+
+**Documentation:** [Portable Homelab Case Study](projects/portable-homelab.md)
+
+**The Fedora environment does not replace the Linux Mint deployment.** Each host has independent configurations, storage, networks and verification requirements.
+
+## Software engineering and security testing
+
+### Firewall verification
+
+I developed a repeatable Python-based checker for selected network security requirements, alongside a test matrix and dated observations from virtual machines.
+
+The documented work includes:
+
+- Positive and negative connectivity tests.
+- Firewall counter correlation.
+- DNS, HTTPS, DHCP and NAT checks.
+- Automated tests for checker behavior.
+- Explicit interpretation of inconclusive observations.
+
+[Explore the implementation and evidence](firewall-verification/README.md)
+
+### AI-assisted code review
+
+I evaluated reusable coding-agent Skills through a controlled offline development exercise using Codex and OpenCode.
+
+The agents independently developed Python utilities for processing synthetic Nmap XML, performed reciprocal code reviews and applied targeted corrections.
+
+The evaluation demonstrated how passing tests can coexist with defects and why independent review, negative testing and cross-runtime verification matter.
+
+[Read the evaluation](ai-agent-evaluation/README.md)
+
+## Education and learning
+
+I am studying cybersecurity and penetration testing in Sweden. The repository documents practical work alongside structured training.
+
+- **[TryHackMe — Cyber Security 101](certifications/tryhackme-cyber-security-101.md):** Completed on 22 October 2026, with 45 hours and 23 minutes recorded on the completion certificate.
+- **[TryHackMe — Jr Penetration Tester](training/tryhackme-jr-penetration-tester.md):** In progress. Last verified at 17% on 11 November 2026; Nmap Basic Port Scans was 5% complete at that checkpoint.
+
+The Cyber Security 101 credential is a **learning-path completion certificate**, not the separate SEC1 professional certification.
+
+[TryHackMe profile](https://tryhackme.com/p/macfarlane.jonathan)
+
+## Technical skills and tools demonstrated
+
+| Area | Technologies and techniques |
 | --- | --- |
-| **Linux Mint host (primary)** | Permanent workstation and hypervisor; legacy Debian RouterVM and separate Alpine v2 work |
-| **KVM/QEMU · libvirt · virt-manager** | Virtual machines and isolated virtual networks |
-| **Debian RouterVM (historical Mint lab)** | Routing, nftables filtering, NAT, and dnsmasq DHCP/DNS |
-| **Debian client VMs** | Testing routing and segment-to-segment policies |
-| **Fedora AgentVM (guest)** | Isolated environment for experimenting with coding-agent tools |
-| **Fedora KDE laptop (portable host)** | Separate encrypted hypervisor for course VMs and demonstrations |
-| **Tailscale** | Access to authorized school lab resources; access details are not published |
+| Linux security | Linux Mint, Fedora, systemd, sysctl, Lynis, auditd, AIDE |
+| Networking | IPv4 routing, NAT, nftables, dnsmasq, SSH, ICMP, network segmentation |
+| Virtualization | KVM/QEMU, libvirt, virt-manager, virtual network bridges |
+| Software engineering | Python, CLI development, Git, automated testing, code review |
+| Security documentation | Test matrices, evidence preservation, technical reporting, architecture diagrams |
+| Security environments | Kali Linux, isolated virtual machines, encryption and firewall controls |
 
-### Tools and techniques used
+These tools appear in documented educational or personal projects. Their inclusion is not a claim of professional-level expertise in every technology.
 
-**Linux and host security:** Lynis, LinPEAS, chkrootkit, auditd, AIDE, systemd, sysctl, Linux permissions and service inspection.
+## Documentation approach
 
-**Networking:** nftables, dnsmasq, NetworkManager, IPv4 routing, NAT, firewall counters, ICMP, traceroute, SSH, and virtual switches/bridges.
+Each technical case study aims to explain:
 
-**Reporting:** Git, Markdown, Mermaid topology diagrams, sanitized terminal evidence, and explicit recording of test limitations.
+1. The problem and intended objective.
+2. The relevant environment and implementation.
+3. Security assumptions and design decisions.
+4. Testing methods and observed evidence.
+5. Results, limitations and lessons learned.
 
-## How these projects are documented
+Historical observations are labeled by environment and date. Successful individual checks are not generalized into claims of complete security.
 
-Each project aims to cover:
+[Technical case-study template](templates/technical-case-study.md)
 
-1. **Objective and architecture** — what the system is supposed to do.
-2. **Security controls** — configurations chosen and the reasons behind them.
-3. **Positive and negative tests** — expected traffic allowed, prohibited traffic blocked.
-4. **Evidence** — observed output, screenshots, and rule-counter changes.
-5. **Limitations and next steps** — what the tests do *not* establish and where improvements remain.
+## Current work and limitations
 
-See the [RouterVM test report](router-vm/agentvm-connectivity-test-2026-10-16.md) and [Linux findings matrix](linux-hardening/findings.md) for more detailed reasoning and verification history.
-
-## Current limitations and upcoming work
-
-- RouterVM's dated ICMP and TCP/22 checks cover selected paths only; arbitrary TCP/UDP ports, IPv6 and stateful edge cases remain untested. See the [2026-10-19 firewall verification](firewall-verification/README.md) for the later checks and their limits.
-- Linux host hardening is incremental; the Lynis report retains recommendations, several of which require compatibility and threat-model review.
-- Representative RouterVM guest connectivity was retested after restarting the virtual machines; broader VM/service persistence testing remains open.
-- Network-monitoring and detection work is planned rather than documented as completed.
-- Screenshots have been cropped and reviewed for unnecessary information, but publication requires a final privacy review of internal lab addresses and terminal context.
+- RouterVM v2 requires further end-to-end segmentation and persistence verification.
+- Fedora portable security controls require additional negative-path testing and backup/restore validation.
+- Network monitoring and detection engineering remain [planned work](network-monitoring/README.md).
+- Historical RouterVM and Linux hardening results apply to their documented configurations and dates.
 
 ## Responsible and authorized testing
 
-All testing described here was performed on systems I own or have explicit permission to assess. The repository intentionally excludes credentials, private keys, school VPN configuration, device inventories, and other operational secrets. Configuration and outcomes are presented for **learning and defensive engineering**, not as claims about third-party systems.
+The work documented here was performed in personal environments or within authorized educational activities.
+
+This repository is intended to contain selected, sanitized technical documentation. Credentials, private keys, recovery information, confidential school-lab material and unreviewed operational evidence are excluded from intended publication.
+
+Security findings and exploitation results are reported only to the extent supported by the available evidence.
 
 ---
 
-**Start here:** [Linux Hardening](linux-hardening/README.md) · [RouterVM](router-vm/README.md) · [Firewall Verification](firewall-verification/README.md) · [Network Topology](diagrams/router-vm-topology.md) · [AI Agent Benchmark](ai-agent-evaluation/README.md)
+**Recommended starting points:** [Firewall Verification](firewall-verification/README.md) · [Linux Hardening](linux-hardening/README.md) · [RouterVM](router-vm/README.md) · [Cross-Agent Code Review](ai-agent-evaluation/README.md)

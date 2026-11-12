@@ -25,7 +25,7 @@ This completion documents structured study and exposure to the topics and tools 
 
 I am applying these fundamentals in a virtualized KVM/QEMU homelab through Linux host security reviews, segmented Debian networks, nftables policy verification, and evidence-based documentation.
 
-I have started **[TryHackMe Jr Penetration Tester](../training/tryhackme-jr-penetration-tester.md)**, with **9% completion verified on 28 October 2026**. Current studies cover penetration-testing foundations and frameworks; network reconnaissance and Nmap remain upcoming in the learning path. The linked progress log distinguishes completed rooms, ongoing work and future topics.
+I am continuing with **[TryHackMe Jr Penetration Tester](../training/tryhackme-jr-penetration-tester.md)**. The latest verified checkpoint is **17% overall completion on 11 November 2026**. Nmap Live Host Discovery is complete, while Nmap Basic Port Scans was 5% in progress at that checkpoint. The linked progress log records dated results and distinguishes confirmed completions from ongoing or unverified work.
 
 ## Certificate evidence
 
